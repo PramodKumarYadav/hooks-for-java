@@ -28,14 +28,14 @@ for file in "${CHANGED_FILES[@]}"; do
     TEST_CLASS=$(echo "$file" | sed 's|src/test/java/||' | sed 's|/|.|g' | sed 's|\.java$||')
     TEST_CLASSES+=("$TEST_CLASS")
   fi
-  
+
   # Check if file is a source file - find corresponding test
   if [[ $file == *"src/main/java"* ]]; then
     # Convert source file to potential test class name
     # Example: src/main/java/com/example/demo/Calculator.java -> com.example.demo.CalculatorTest
     BASE_NAME=$(echo "$file" | sed 's|src/main/java/||' | sed 's|/|.|g' | sed 's|\.java$||')
     POTENTIAL_TEST="${BASE_NAME}Test"
-    
+
     # Check if test file exists
     TEST_FILE_PATH=$(echo "$file" | sed 's|src/main/java|src/test/java|' | sed 's|\.java$|Test.java|')
     if [ -f "$TEST_FILE_PATH" ]; then
