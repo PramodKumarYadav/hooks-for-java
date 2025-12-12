@@ -1,0 +1,75 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+
+# To install pre-commit hooks:
+#   pip install pre-commit
+#   pre-commit install
+
+# To run hooks manually:
+#   pre-commit run --all-files
+
+repos:
+  # Standard pre-commit hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+      - id: check-merge-conflict
+      - id: mixed-line-ending
+
+  # Maven Spotless - Code Formatting (mimics lint-staged for Java files)
+  - repo: local
+    hooks:
+      - id: spotless-check
+        name: Spotless Check (Code Formatting)
+        entry: bash -c 'mvn spotless:check'
+        language: system
+        types: [java]
+        pass_filenames: false
+        description: "Checks if Java code is formatted according to Google Java Format"
+
+      - id: spotless-apply
+        name: Spotless Apply (Auto-format)
+        entry: bash -c 'mvn spotless:apply'
+        language: system
+        types: [java]
+        pass_filenames: false
+        stages: [manual]
+        description: "Automatically formats Java code (run with --hook-stage manual)"
+
+  # Checkstyle - Style Checking
+  - repo: local
+    hooks:
+      - id: checkstyle
+        name: Checkstyle
+        entry: bash -c 'mvn checkstyle:check'
+        language: system
+        types: [java]
+        pass_filenames: false
+        description: "Runs Checkstyle to enforce coding standards"
+
+  # Run tests only for changed files (mimics lint-staged behavior)
+  - repo: local
+    hooks:
+      - id: test-changed
+        name: Test Changed Files
+        entry: bash -c '.pre-commit-scripts/run-changed-tests.sh'
+        language: system
+        types: [java]
+        pass_filenames: true
+        description: "Runs tests only for changed Java files"
+
+  # Optional: Run all tests (disabled by default)
+  - repo: local
+    hooks:
+      - id: test-all
+        name: Test All
+        entry: bash -c 'mvn test'
+        language: system
+        types: [java]
+        pass_filenames: false
+        stages: [manual]
+        description: "Runs all tests (run with --hook-stage manual)"
